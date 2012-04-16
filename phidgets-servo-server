@@ -31,18 +31,25 @@ end
 class ServoServer < EventMachine::Connection
   include EventMachine::HttpServer
 
+  class Error < Exception
+    attr_reader :status, :message
+    def initialize(msg, status=500)
+      @status = status
+      @message = msg
+    end
+  end
+
   def process_http_request
     res = EventMachine::DelegatedHttpResponse.new(self)
     puts "[http] #{@http_request_method} #{@http_path_info} #{@http_query_string} #{@http_post_content}"
-    res.status = 200
     begin
-      raise StandardError.new 'Servo not Attached' unless @@servo.attached?
+      raise Error.new('Servo not Attached', 500) unless @@servo.attached?
       if @http_request_method == 'POST'
         pos = @http_post_content.to_i
         min = @@servo.servos[0].position_min
         max = @@servo.servos[0].position_max
         if pos < min or max < pos
-          raise Exception.new "Position must be #{min}-#{max}"
+          raise Error.new("Position must be #{min}-#{max}", 400)
         else
           @@servo.servos[0].position = pos
           sleep params[:interval]
@@ -52,10 +59,17 @@ class ServoServer < EventMachine::Connection
         res.content = @@servo.servos[0].position.to_i
       end
       puts "servo position : #{res.content}"
+      res.status = 200
       res.send_response
     rescue => e
-      res.status = 400
-      res.content = e.to_s
+      STDERR.puts "error : #{e.message}"
+      res.status = 500
+      res.content = e.message
+      res.send_response
+    rescue ServoServer::Error => e
+      STDERR.puts "error(#{e.status}) : #{e.message}"
+      res.status = e.status.to_i
+      res.content = e.message
       res.send_response
     end
   end
