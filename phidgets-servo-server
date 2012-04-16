@@ -1,0 +1,69 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'phidgets-ffi'
+require 'ArgsParser'
+require 'eventmachine'
+require 'evma_httpserver'
+
+parser = ArgsParser.parser
+parser.bind(:help, :h, 'show help')
+parser.bind(:port, :p, 'HTTP Port', 8901)
+parser.bind(:interval, :i, 'Servo interval(sec)', 1.0)
+
+first, params = parser.parse ARGV
+
+if parser.has_option(:help)
+  STDERR.puts parser.help
+  STDERR.puts "e.g.  ruby #{$0} -port 8901"
+  exit 1
+end
+
+p params
+
+@@servo = Phidgets::Servo.new
+
+@@servo.on_attach do |device, obj|
+  puts "#{device.device_class} attached"
+  device.servos[0].engaged = true
+  device.servos[0].type = Phidgets::FFI::ServoType[:default]
+end
+
+class ServoServer < EventMachine::Connection
+  include EventMachine::HttpServer
+
+  def process_http_request
+    res = EventMachine::DelegatedHttpResponse.new(self)
+    puts "[http] #{@http_request_method} #{@http_path_info} #{@http_query_string} #{@http_post_content}"
+    res.status = 200
+    begin
+      raise StandardError.new 'Servo not Attached' unless @@servo.attached?
+      if @http_request_method == 'POST'
+        pos = @http_post_content.to_i
+        min = @@servo.servos[0].position_min
+        max = @@servo.servos[0].position_max
+        if pos < min or max < pos
+          raise Exception.new "Position must be #{min}-#{max}"
+        else
+          @@servo.servos[0].position = pos
+          sleep params[:interval]
+          res.content = @@servo.servos[0].position.to_i
+        end
+      elsif @http_request_method == 'GET'
+        res.status = 400
+        res.content = @@servo.servos[0].position.to_i
+      end
+      puts "servo position : #{res.content}"
+      res.send_response
+    rescue => e
+      res.status = 400
+      res.content = e.to_s
+      res.send_response
+    end
+  end
+end
+
+EM::run do
+  EM::start_server("0.0.0.0", params[:port].to_i, ServoServer)
+  puts "starting HTTP server.."
+  puts " => port #{params[:port].to_i}"
+end
