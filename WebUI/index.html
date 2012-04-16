@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta charset="UTF-8" content="text/html" http-equiv="Content-Type" />
+    <title>Phidgets Servo WebUI</title>
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/main.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div id="content">
+      <div id="header">
+        <h1>Phidgets Servo WebUI</h1>
+      </div>
+      <div id="main">
+        <h2>Server</h2>
+        <div>
+          <input type="text" value="http://localhost:8901" id="addr" size="30" />
+        </div>
+        <h2>Control</h2>
+        <div>
+          <input type="range" min="0" max="180" value="90.0" id="control" />
+          <input type="text" value="90" id="position" size="5" disabled="disabled" />
+        </div>
+      </div>
+      <hr />
+      <div id="footer">
+        source code :
+        <a href="https://github.com/shokai/phidgets-servo-server">https://github.com/shokai/phidgets-servo-server</a>
+      </div>
+    </div>
+  </body>
+</html>

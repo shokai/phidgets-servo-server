@@ -1,0 +1,20 @@
+.permalink {
+  font-size: 80%;
+}
+
+a {
+  color: #333366;
+}
+
+body {
+  background-color: #DDDDEE;
+  color: #000000;
+}
+body div {
+  margin: 10px;
+  font-size: 95%;
+}
+
+#status {
+  font-size : 95%;
+}
