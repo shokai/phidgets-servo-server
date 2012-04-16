@@ -49,7 +49,6 @@ class ServoServer < EventMachine::Connection
           res.content = @@servo.servos[0].position.to_i
         end
       elsif @http_request_method == 'GET'
-        res.status = 400
         res.content = @@servo.servos[0].position.to_i
       end
       puts "servo position : #{res.content}"
