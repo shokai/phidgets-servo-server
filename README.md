@@ -2,6 +2,7 @@ Phidgets Servo Server
 =====================
 control Phidgets Servo Motor via HTTP
 
+* MacOSX or Linux
 * Ruby 1.8.7+
 * [Phidgets](http://www.phidgets.com)
 
@@ -11,10 +12,10 @@ Install Dependencies
 
 Install [Phidget21 Library](http://www.phidgets.com/drivers.php)
 
-Install rubygem
+Install rubygems
 
     % gem install ffi phidgets-ffi eventmachine eventmachine_httpserver ArgsParser
-n
+
 
 
 Run
