@@ -14,7 +14,7 @@ Install [Phidget21 Library](http://www.phidgets.com/drivers.php)
 
 Install rubygems
 
-    % gem install ffi phidgets-ffi eventmachine eventmachine_httpserver ArgsParser
+    % gem install ffi phidgets-ffi eventmachine eventmachine_httpserver args_parser
 
 
 

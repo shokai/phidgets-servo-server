@@ -1,23 +1,22 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'phidgets-ffi'
-require 'ArgsParser'
+require 'args_parser'
 require 'eventmachine'
 require 'evma_httpserver'
 
-parser = ArgsParser.parser
-parser.bind(:help, :h, 'show help')
-parser.bind(:port, :p, 'HTTP Port', 8901)
+parser = ArgsParser.parse ARGV do
+  arg :help, 'show help', :alias => :h
+  arg :port, 'HTTP Port', :alias => :p, :default => 8901
+end
 
-first, params = parser.parse ARGV
-
-if parser.has_option(:help)
+if parser.has_option? :help
   STDERR.puts parser.help
   STDERR.puts "e.g.  ruby #{$0} -port 8901"
   exit 1
 end
 
-p params
+p parser
 
 @@servo = Phidgets::Servo.new
 
@@ -76,7 +75,7 @@ class ServoServer < EventMachine::Connection
 end
 
 EM::run do
-  EM::start_server("0.0.0.0", params[:port].to_i, ServoServer)
+  EM::start_server("0.0.0.0", parser[:port].to_i, ServoServer)
   puts "starting HTTP server.."
-  puts " => port #{params[:port].to_i}"
+  puts " => port #{parser[:port].to_i}"
 end
