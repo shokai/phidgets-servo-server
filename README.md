@@ -38,3 +38,17 @@ get Motor Position
 set Motor Position
 
     % curl -d 90 http://localhost:8901
+
+
+Auto Start
+----------
+
+install plist
+
+    % cp org.shokai.phidgetsservo.plist /Library/LaunchDaemons/
+    % sudo chown root /Library/LaunchDaemons/org.shokai.phidgetsservo.plist
+    % sudo chgrp wheel /Library/LaunchDaemons/org.shokai.phidgetsservo.plist
+
+edit plist, then
+
+    % sudo launchctl load /Library/LaunchDaemons/org.shokai.phidgetsservo.plist
